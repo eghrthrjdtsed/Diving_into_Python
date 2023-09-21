@@ -33,7 +33,7 @@ class ATM:
         if amount % 50 != 0:
             print("Сумма снятия должна быть кратна 50 у.е.")
             return
-        if self.balance <= 5000000:
+        if self.balance <= 5_000_000:
             withdrawal_fee = min(max(amount * 0.015, 30), 600)
             amount -= withdrawal_fee
         if self.balance < amount:
