@@ -5,24 +5,30 @@
 # Программа должна возвращать сумму и произведение* дробей. Для проверки своего кода
 # используйте модуль fractions.
 
-# HEX: int = 16
-#
-# num: int = int(input('Введите число: '))
-#
-# for div in [HEX]:
-#     test_num: int = num
-#     result: str = ''
-#     while test_num > 0:
-#         result = str(test_num % div) + result
-#         test_num //= div
-#     print(f'Число {num} в {div} ричном представлении {result = }')
-#
-# print(f'{hex(num) = :>1}')
+def decimal_to_hexadecimal(decimal):
+    hexadecimal_chars = "0123456789ABCDEF"
+    if decimal == 0:
+        return "0"
+    result = ""
+    while decimal > 0:
+        remainder = decimal % 16
+        result = hexadecimal_chars[remainder] + result
+        decimal = decimal // 16
+    return result
+
+
+decimal_number = int(input("Введите целое число: "))
+
+
+hexadecimal_representation = decimal_to_hexadecimal(decimal_number)
+
+print(f"Шестнадцатеричное представление: {hexadecimal_representation}")
 
 
 
 
 
+from fractions import Fraction
 
 def parse_fraction(fraction_str):
     try:
@@ -62,9 +68,13 @@ fraction2: str = input("Введите вторую дробь (в формат�
 
 results = calculate_fraction_operations(fraction1, fraction2)
 
+
+
 if results is not None:
     sum_result, product_result = results
     print(f"Сумма дробей: {sum_result}")
     print(f"Произведение дробей: {product_result}")
+    print(f"Сумма дробей с функцией Fraction: {Fraction(sum_result)}")
+    print(f"Произведение дробей с функцией Fraction: {Fraction(product_result)}")
 else:
     print("Ошибка: Некорректный формат дробей.")
