@@ -23,7 +23,7 @@ decimal_number = int(input("Введите целое число: "))
 hexadecimal_representation = decimal_to_hexadecimal(decimal_number)
 
 print(f"Шестнадцатеричное представление: {hexadecimal_representation}")
-
+print(f"Шестнадцатеричное представление с Hex: {hex(decimal_number)}")
 
 
 
