@@ -26,6 +26,7 @@ print(f'{square = }')
 import math
 import decimal
 
+
 def calculate_circle_properties(diameter: decimal.Decimal) -> tuple[decimal.Decimal, decimal.Decimal]:
     decimal.getcontext().prec = 42
     radius = diameter / 2
