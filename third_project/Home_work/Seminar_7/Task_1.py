@@ -1,5 +1,5 @@
 try:
     with open('file.txt', 'w') as file:
-        file.write('hell', end='')
+        file.write('hello')
 except:
     print('Ошибка')
