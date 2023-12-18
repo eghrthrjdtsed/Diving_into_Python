@@ -1,60 +1,85 @@
 import csv
 
 
-class NameDescriptor:
-    def __set_name__(self, owner, name):
-        self.name = name
-
-    def __set__(self, instance, value):
-        if not value.replace(" ", "").isalpha() or not value.istitle():
-            raise ValueError("ФИО должно состоять только из букв и начинаться с заглавной буквы")
-        instance.__dict__[self.name] = value
-
-
 class Student:
-    MIN_GRADE = 2
-    MAX_GRADE = 5
-    MAX_TEST_SCORE = 100
-    name = NameDescriptor()
+    """
+    Класс, представляющий студента.
+
+    Атрибуты:
+    - name (str): ФИО студента
+    - subjects (dict): словарь, содержащий предметы и их оценки и результаты тестов
+
+    Методы:
+    - __init__(self, name, subjects_file): конструктор класса
+    - __setattr__(self, name, value): дескриптор, проверяющий ФИО на первую заглавную букву и наличие только букв
+    - __getattr__(self, name): получение значения атрибута
+    - __str__(self): возвращает строковое представление студента
+    - load_subjects(self, subjects_file): загрузка предметов из файла CSV
+    - get_average_test_score(self, subject): возвращает средний балл по тестам для заданного предмета
+    - get_average_grade(self): возвращает средний балл по всем предметам
+    - add_grade(self, subject, grade): добавление оценки по предмету
+    - add_test_score(self, subject, test_score): добавление результата теста по предмету
+    """
 
     def __init__(self, name, subjects_file):
+        self.name = name
         self.subjects = {}
         self.load_subjects(subjects_file)
-        self.name = name
 
-    def load_subjects(self, subjects_file):
-        with open(subjects_file, 'r', encoding='utf-8') as file:
-            reader = csv.reader(file)
-            subjects_list = next(reader)
-            self.subjects = {subject: {"grades": [], "test_scores": []} for subject in subjects_list}
+    def __setattr__(self, name, value):
+        if name == 'name':
+            if not value.replace(' ', '').isalpha() or not value.istitle():
+                raise ValueError("ФИО должно состоять только из букв и начинаться с заглавной буквы")
+        super().__setattr__(name, value)
 
-    def add_grade(self, subject, grade):
-        subject_info = self.subjects.get(subject)
-        if subject_info is None:
-            raise ValueError(f"Предмет {subject} не найден")
-        if grade not in range(self.MIN_GRADE, self.MAX_GRADE + 1):
-            raise ValueError(f"Оценка должна быть целым числом от {self.MIN_GRADE} до {self.MAX_GRADE}")
-        subject_info["grades"].append(grade)
-
-    def add_test_score(self, subject, test_score):
-        if not (0 <= test_score <= 100):
-            raise ValueError("Результат теста должен быть целым числом от 0 до 100")
-        self.subjects[subject]["test_scores"].append(test_score)
-
-    def get_average_test_score(self, subject):
-        test_scores = self.subjects[subject]["test_scores"]
-        return sum(test_scores) / len(test_scores) if test_scores else None
-
-    def get_average_grade(self):
-        all_grades = [grade for subject_info in self.subjects.values() for grade in subject_info["grades"]]
-        return sum(all_grades) / len(all_grades) if all_grades else None
+    def __getattr__(self, name):
+        if name in self.subjects:
+            return self.subjects[name]
+        else:
+            raise AttributeError(f"Предмет {name} не найден")
 
     def __str__(self):
-        subjects_with_data = [
-            subject for subject, info in self.subjects.items()
-            if any(info['grades'] + info['test_scores'])
-        ]
-        return f"Студент: {self.name}\nПредметы: {', '.join(subjects_with_data) or 'Нет данных по предметам'}"
+        return f"Студент: {self.name}\nПредметы: {', '.join(self.subjects.keys())}"
+
+    def load_subjects(self, subjects_file):
+        with open(subjects_file, 'r') as f:
+            reader = csv.reader(f)
+            for row in reader:
+                subject = row[0]
+                if subject not in self.subjects:
+                    self.subjects[subject] = {'grades': [], 'test_scores': []}
+
+    def add_grade(self, subject, grade):
+        if subject not in self.subjects:
+            self.subjects[subject] = {'grades': [], 'test_scores': []}
+        if not isinstance(grade, int) or grade < 2 or grade > 5:
+            raise ValueError("Оценка должна быть целым числом от 2 до 5")
+        self.subjects[subject]['grades'].append(grade)
+
+    def add_test_score(self, subject, test_score):
+        if subject not in self.subjects:
+            self.subjects[subject] = {'grades': [], 'test_scores': []}
+        if not isinstance(test_score, int) or test_score < 0 or test_score > 100:
+            raise ValueError("Результат теста должен быть целым числом от 0 до 100")
+        self.subjects[subject]['test_scores'].append(test_score)
+
+    def get_average_test_score(self, subject):
+        if subject not in self.subjects:
+            raise ValueError(f"Предмет {subject} не найден")
+        test_scores = self.subjects[subject]['test_scores']
+        if len(test_scores) == 0:
+            return 0
+        return sum(test_scores) / len(test_scores)
+
+    def get_average_grade(self):
+        total_grades = []
+        for subject in self.subjects:
+            grades = self.subjects[subject]['grades']
+            if len(grades) > 0:
+                total_grades.extend(grades)
+        if len(total_grades) == 0:
+            return 0
+        return sum(total_grades) / len(total_grades)
 
 
 # Test the Student class

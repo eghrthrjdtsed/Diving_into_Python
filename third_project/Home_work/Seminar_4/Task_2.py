@@ -6,9 +6,14 @@
 def key_params(**kwargs):
     result = {}
     for key, value in kwargs.items():
-        result[value if hash(value) else str(value)] = key
+        if isinstance(value, (int, str, float, bool, tuple)):
+            result[value] = key
+        else:
+            result[str(value)] = key
     return result
 
 
-params = key_params(a=1, b='hello', c=[1, 2, 3], d={})
+
+
+params = key_params(a=None, b='hello', c=[1, 2, 3], d={})
 print(params)

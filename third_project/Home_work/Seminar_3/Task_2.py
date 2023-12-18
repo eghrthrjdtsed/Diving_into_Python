@@ -3,7 +3,6 @@
 
 import re
 from collections import Counter
-text = 'Hello world. Hello Python. Hello again.'
 
 # Удаляем знаки препинания и приводим текст к нижнему регистру
 cleaned_text = ''.join(char.lower() if char.isalpha() or char.isspace() else ' ' for char in text)
@@ -22,3 +21,4 @@ for word in words:
 top_words = sorted(word_counts.items(), key=lambda x: x[1], reverse=True)[:10]
 
 print(top_words)
+
